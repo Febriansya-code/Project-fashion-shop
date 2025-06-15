@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aanshop - Streetwear fit</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<style>
+  /* Base and typography */
+  :root {
+    --gray-text: #6b7280;
+    --bg-light: #ffffff;
+    --brand-color: #111111;
+    --card-radius: 0.75rem;
+    --card-shadow: rgba(0, 0, 0, 0.07);
+    --transition-speed: 0.25s;
+  }
+  body {
+    background-color: var(--bg-light);
+    color: var(--gray-text);
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 {
+    color: var(--brand-color);
+    font-weight: 700;
+  }
+  h1 {
+    font-size: 3rem;
+    font-weight: 800;
+  }
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  a {
+    color: var(--brand-color);
+    text-decoration: none;
+    transition: color var(--transition-speed);
+  }
+  a:hover, a:focus {
+    text-decoration: none;
+    color: #555;
+  }
+
+  /* Container max width and padding */
+  .container-max {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Loading overlay */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--brand-color);
+    z-index: 9999;
+  }
+
+  /* Navigation */
+  nav.navbar {
+    background: var(--bg-light);
+    box-shadow: 0 1px 6px var(--card-shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  nav.navbar .navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+  }
+  nav.navbar .nav-link {
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+  }
+  nav.navbar .nav-link:hover, nav.navbar .nav-link.active {
+    color: #222;
+    background-color: #f5f5f5;
+    border-radius: var(--card-radius);
+    transition: background-color 0.3s ease;
+  }
+  nav.navbar-collapse {
+    justify-content: flex-end;
+  }
+
+  /* Section pages layout */
+  section.page {
+    display: none;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  section.page.active {
+    display: block;
+  }
+
+  /* Hero Slider */
+  .carousel {
+    border-radius: var(--card-radius);
+    box-shadow: 0 6px 15px var(--card-shadow);
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+  .carousel .carousel-item img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+  }
+
+  /* Button primary hero */
+  .btn-hero {
+    background-color: var(--brand-color);
+    color: white;
+    font-weight: 700;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+    border-radius: var(--card-radius);
+    border: none;
+    transition: background-color 0.3s ease;
+    margin-top: 1.5rem;
+    display: inline-block;
+  }
+  .btn-hero:hover, .btn-hero:focus {
+    background-color: #333;
+    color: #eee;
+    text-decoration: none;
+  }
+
+  /* Product Cards */
+  .product-card {
+    border-radius: var(--card-radius);
+    box-shadow: 0 3px 10px var(--card-shadow);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background: white;
+  }
+  .product-card:hover, .product-card:focus-within {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px var(--card-shadow);
+    z-index: 5;
+  }
+  .product-card img {
+    border-top-left-radius: var(--card-radius);
+    border-top-right-radius: var(--card-radius);
+  }
+  .product-card-body {
+    padding: 1rem;
+    position: relative;
+  }
+  /* hidden detail for hover reveal */
+  .product-detail {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fafafa;
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: var(--gray-text);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed);
+    box-sizing: border-box;
+    border-radius: 0 0 var(--card-radius) var(--card-radius);
+    border-top: 1px solid #ddd;
+  }
+  .product-card:hover .product-detail,
+  .product-card:focus-within .product-detail {
+    top: 70%;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Responsive table */
+  .table-responsive {
+    margin-top: 2rem;
+  }
+  table.table {
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: 0 3px 10px var(--card-shadow);
+    background: white;
+  }
+  table thead {
+    background: #f5f5f5;
+  }
+  table thead th {
+    font-weight: 700;
+    color: var(--brand-color);
+  }
+  table tbody tr:hover {
+    background-color: #f0f0f0;
+  }
+
+  /* Forms */
+  form {
+    max-width: 400px;
+    margin-top: 1rem;
+  }
+  label {
+    font-weight: 600;
+  }
+  input.form-control,
+  textarea.form-control {
+    border-radius: var(--card-radius);
+    border: 1px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+  input.form-control:focus, textarea.form-control:focus {
+    border-color: var(--brand-color);
+    outline: none;
+    box-shadow: 0 0 4px rgba(17, 17, 17, 0.15);
+  }
+  .is-invalid {
+    border-color: #dc3545 !important;
+  }
+  .invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 0.875rem;
+  }
+  input.is-invalid + .invalid-feedback,
+  textarea.is-invalid + .invalid-feedback {
+    display: block;
+  }
+
+  /* Buttons for forms */
+  button.btn-primary {
+    background-color: var(--brand-color);
+    font-weight: 700;
+    border-radius: var(--card-radius);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+  button.btn-primary:hover, button.btn-primary:focus {
+    background-color: #333;
+  }
+
+  /* Utility spacing consistent */
+  .pt-16 { padding-top: 4rem !important; }
+  .pb-20 { padding-bottom: 5rem !important; }
+  .mt-5 { margin-top: 3rem !important; }
+  .mb-5 { margin-bottom: 3rem !important; }
+
+  /* Responsive fixes */
+  /* Adjust carousel height on small */
+  @media (max-width: 576px) {
+    .carousel .carousel-item img {
+      height: 220px;
+    }
+    h1 {
+      font-size: 2.5rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading" aria-live="polite" aria-busy="true">Loading...</div>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container-max d-flex align-items-center">
+    <a class="navbar-brand" href="#" data-target="home">Aanshop</a>
+    <button class="navbar-toggler" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navbarNav" id="navToggle">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto" role="menubar">
+        <li class="nav-item" role="none"><a class="nav-link active" href="#" data-target="home" role="menuitem" tabindex="0">Home</a></li>
+        <li class="nav-item" role="none"><a class="nav-link" href="#" data-target="products" role="menuitem" tabindex="-1">Products</a></li>
+        <li class="nav-item" role="none"><a class="nav-link" href="#" data-target="about" role="menuitem" tabindex="-1">About</a></li>
+        <li class="nav-item" role="none"><a class="nav-link" href="#" data-target="contact" role="menuitem" tabindex="-1">Contact</a></li>
+        <li class="nav-item" role="none"><a class="nav-link" href="#" data-target="login" role="menuitem" tabindex="-1">Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container-max">
+  
+  <!-- Home / Hero Section -->
+  <section id="home" class="page active" role="main" aria-label="Home page">
+    <h1 class="pt-16 pb-3">Welcome to Aanshop</h1>
+    <p class="lead" style="font-size:1.25rem; max-width:600px; color: var(--gray-text);">Your premier destination for elegant and modern fashion wear.</p>
+    <a href="#" class="btn-hero" data-target="products">Browse Products</a>
+
+    <div id="carouselHome" class="carousel slide mt-5" data-ride="carousel" aria-label="Fashion image slider">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselHome" data-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></li>
+        <li data-target="#carouselHome" data-slide-to="1" aria-label="Slide 2"></li>
+        <li data-target="#carouselHome" data-slide-to="2" aria-label="Slide 3"></li>
+      </ol>
+      <div class="carousel-inner" role="listbox">
+        <div class="carousel-item active">
+          <img src="image/kezia.jpg" alt="Fashion image 1" />
+        </div>
+        <div class="carousel-item">
+          <img src="image/ramsei.jpg" alt="Fashion image 2" />
+        </div>
+        <div class="carousel-item">
+          <img src="image/jack.jpg" alt="Fashion image 3" />
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#carouselHome" role="button" data-slide="prev" aria-label="Previous slide">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      </a>
+      <a class="carousel-control-next" href="#carouselHome" role="button" data-slide="next" aria-label="Next slide">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section id="products" class="page" role="main" aria-label="Products listing">
+    <h1 class="pt-16 mb-3">Our Products</h1>
+    <div class="row">
+      <article class="col-md-4 mb-4" tabindex="0">
+        <div class="product-card" aria-labelledby="product1-title" role="group">
+          <img src="image/shutdown.jpg" alt="Product 1 image" />
+          <div class="product-card-body">
+            <h3 id="product1-title">SNSB Hoodie SHUTDOWN</h3>
+            <p class="mb-0">Cool and timeless fashion dress, perfect for all occasions.</p>
+            <div class="product-detail" aria-hidden="true">
+              Fabric: Silk, Sizes: S, M, L, XL, Price: 980k
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="col-md-4 mb-4" tabindex="0">
+        <div class="product-card" aria-labelledby="product2-title" role="group">
+          <img src="image/dirty.jpg" alt="Product 2 image" />
+          <div class="product-card-body">
+            <h3 id="product2-title">Full set DirtyBusiness</h3>
+            <p class="mb-0">Set Tracksuit Hitam Streetstyle Gaya Kasual yang Tetap Nendang.</p>
+            <div class="product-detail" aria-hidden="true">
+              Fabric: Cotton, Sizes: M, L, XL, Price: 1.500.000
+            </div>
+          </div>
+        </div>
+      </article>
+      <article class="col-md-4 mb-4" tabindex="0">
+        <div class="product-card" aria-labelledby="product3-title" role="group">
+          <img src="image/nike tn.jpg" alt="Product 3 image" />
+          <div class="product-card-body">
+            <h3 id="product3-title">Formasi tn 500k</h3>
+            <p class="mb-0">Nike Air Max Plus "Blue Gradient" Energi dan Kecepatan dalam Satu Langkah.</p>
+            <div class="product-detail" aria-hidden="true">
+              Fabric: Synthetic, Sizes: 39, 40, 41, Price: 500k
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <h2 class="mt-5">Product Table</h2>
+    <div class="table-responsive" role="region" aria-label="Products details Table">
+      <table class="table" aria-describedby="productTableCaption">
+        <caption id="productTableCaption" class="sr-only">List of products with name, price, and description</caption>
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SNSB Hoodie SHUTDOWN</td>
+            <td>980k</td>
+            <td>Cool and timeless fashion dress, perfect for all occasions.</td>
+          </tr>
+          <tr>
+            <td>Full set DirtyBusiness</td>
+            <td>1.500.000k</td>
+            <td>Set Tracksuit Hitam Streetstyle Gaya Kasual yang Tetap Nendang.</td>
+          </tr>
+          <tr>
+            <td>Formasi tn 500k</td>
+            <td>500k</td>
+            <td>Nike Air Max Plus "Blue Gradient" Energi dan Kecepatan dalam Satu Langkah.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="page" role="main" aria-label="About Fashion Shop">
+    <h1 class="pt-16 mb-3">About Us</h1>
+    <p style="max-width:600px; line-height:1.6;">
+      Aanshop is a modern fashion website dedicated
+       to bringing you the latest trends and quality
+        apparel for men, women, and youth. We believe
+         fashion is a way of life, and our goal is to offer
+          you timeless style pieces, from streetwear to
+           elegant evening outfits. Our collections are
+            carefully curated from top designers and fresh
+             new talents, ensuring you always find something
+              special to complement your personality and lifestyle..
+    </p>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="page" role="main" aria-label="Contact Fashion Shop">
+    <h1 class="pt-16 mb-3">Contact Us</h1>
+    <form id="contactForm" novalidate aria-describedby="contactNote" role="form">
+      <p id="contactNote" class="sr-only">Please fill out the form below to contact us.</p>
+      <div class="form-group">
+        <label for="contactName">Name</label>
+        <input id="contactName" name="contactName" type="text" class="form-control" minlength="5" maxlength="20" required aria-describedby="contactNameHelp contactNameError" />
+        <small id="contactNameHelp" class="form-text text-muted">Between 5 and 20 characters.</small>
+        <div id="contactNameError" class="invalid-feedback">Name must be between 5 and 20 characters.</div>
+      </div>
+      <div class="form-group">
+        <label for="contactEmail">Email</label>
+        <input id="contactEmail" name="contactEmail" type="email" class="form-control" required aria-describedby="contactEmailError" />
+        <div id="contactEmailError" class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
+      <div class="form-group">
+        <label for="contactMessage">Message</label>
+        <textarea id="contactMessage" name="contactMessage" rows="4" class="form-control" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" aria-label="Submit contact form">Submit</button>
+    </form>
+  </section>
+
+  <!-- Login Section -->
+  <section id="login" class="page" role="main" aria-label="Login to Fashion Shop">
+    <h1 class="pt-16 mb-3">Login</h1>
+    <form id="loginForm" novalidate aria-describedby="loginNote" role="form">
+      <p id="loginNote" class="sr-only">Please enter your password to login.</p>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" name="loginPassword" type="password" class="form-control" required aria-describedby="passwordError" />
+        <div id="passwordError" class="invalid-feedback">Password must be at least 8 characters long, contain uppercase and lowercase letters, and at least one number.</div>
+      </div>
+      <button type="submit" class="btn btn-primary" aria-label="Submit login form">Login</button>
+    </form>
+  </section>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  // Hide loading after 2 seconds
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(() => {
+      const loadingEl = document.getElementById("loading");
+      if (loadingEl) loadingEl.style.display = "none";
+    }, 2000);
+
+    // Navigation logic
+    const navLinks = document.querySelectorAll("nav.navbar .nav-link");
+    const sections = document.querySelectorAll("section.page");
+    const containerCollapse = document.getElementById("navbarNav");
+    const navToggle = document.getElementById("navToggle");
+
+    function setActivePage(targetId) {
+      sections.forEach((section) => {
+        section.classList.toggle("active", section.id === targetId);
+      });
+      navLinks.forEach((link) => {
+        link.classList.toggle("active", link.dataset.target === targetId);
+        if (link.dataset.target === targetId) {
+          link.setAttribute("tabindex", "0");
+          link.setAttribute("aria-current", "page");
+        } else {
+          link.setAttribute("tabindex", "-1");
+          link.removeAttribute("aria-current");
+        }
+      });
+      if (containerCollapse.classList.contains("show")) {
+        containerCollapse.classList.remove("show");
+      }
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = e.currentTarget.dataset.target;
+        setActivePage(target);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
+    // Mobile nav toggle
+    navToggle.addEventListener("click", () => {
+      const expanded = navToggle.getAttribute("aria-expanded") === "true";
+      navToggle.setAttribute("aria-expanded", expanded ? "false" : "true");
+      containerCollapse.classList.toggle("show");
+    });
+
+    // Contact form validation
+    const contactForm = document.getElementById("contactForm");
+    if (contactForm) {
+      contactForm.addEventListener("submit", function (e) {
+        let valid = true;
+        const nameInput = document.getElementById("contactName");
+        const emailInput = document.getElementById("contactEmail");
+
+        // Validate name length
+        if (nameInput.value.length < 5 || nameInput.value.length > 20) {
+          valid = false;
+          nameInput.classList.add("is-invalid");
+        } else {
+          nameInput.classList.remove("is-invalid");
+        }
+
+        // Validate email format
+        const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+        if (!emailValid) {
+          valid = false;
+          emailInput.classList.add("is-invalid");
+        } else {
+          emailInput.classList.remove("is-invalid");
+        }
+
+        if (!valid) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+
+    // Login form password validation
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+      loginForm.addEventListener("submit", function (e) {
+        const passwordInput = document.getElementById("loginPassword");
+        // At least 8 chars, 1 uppercase, 1 lowercase, 1 number
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        if (!passwordRegex.test(passwordInput.value)) {
+          e.preventDefault();
+          passwordInput.classList.add("is-invalid");
+          passwordInput.focus();
+        } else {
+          passwordInput.classList.remove("is-invalid");
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>
+
